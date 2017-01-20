@@ -1,0 +1,22 @@
+{
+    "name": "uma/redis-session-handler",
+    "description": "An alternative Redis session handler",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.6",
+        "ext-redis": "*"
+    },
+    "autoload": {
+        "classmap": ["RedisSessionHandler.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "UMA\\RedisSessions\\Tests\\": "tests/e2e"
+        }
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^6.2",
+        "phpunit/phpunit": "^4.8"
+    }
+}
