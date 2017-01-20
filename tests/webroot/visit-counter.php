@@ -10,7 +10,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 // off allows full-blown web browsers to resend cookies over a plain HTTP connection.
 ini_set('session.cookie_secure', '0');
 
-// session_set_save_handler(new \UMA\RedisSessionHandler(), true);
+session_set_save_handler(new \UMA\RedisSessionHandler(), true);
 
 session_start();
 

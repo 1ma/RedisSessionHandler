@@ -12,7 +12,7 @@ class RedisSessionHandler extends \SessionHandler
      * session can remain locked. This is only meant
      * as a last resort releasing mechanism if for an
      * unknown reason the PHP engine never
-     * calls APCuSessionHandler::close().
+     * calls RedisSessionHandler::close().
      *
      * $lock_ttl is set to the 'max_execution_time'
      * runtime configuration value.
@@ -24,7 +24,7 @@ class RedisSessionHandler extends \SessionHandler
     /**
      * The maximum number of seconds that a session
      * will be kept before it is considered stale and is
-     * purged from APCu.
+     * purged from Redis.
      *
      * $session_ttl is set to the 'session.gc_maxlifetime'
      * runtime configuration value.
@@ -50,16 +50,22 @@ class RedisSessionHandler extends \SessionHandler
      */
     private $new_sessions;
 
+    /**
+     * @var \Redis
+     */
+    private $redis;
+
     public function __construct()
     {
-        if (false === extension_loaded('apcu')) {
-            throw new \RuntimeException("the 'apcu' extension is needed in order to use this session handler");
+        if (false === extension_loaded('redis')) {
+            throw new \RuntimeException("the 'redis' extension is needed in order to use this session handler");
         }
 
         $this->lock_ttl = ini_get('max_execution_time');
         $this->session_ttl = ini_get('session.gc_maxlifetime');
         $this->open_sessions = [];
         $this->new_sessions = [];
+        $this->redis = new \Redis();
     }
 
     /**
@@ -67,7 +73,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function open($save_path, $name)
     {
-        return true;
+        return $this->redis->connect('redis');
     }
 
     /**
@@ -95,7 +101,7 @@ class RedisSessionHandler extends \SessionHandler
             $session_id = session_id();
         }
 
-        if (false === $session_data = apcu_fetch($session_id)) {
+        if (false === $session_data = $this->redis->get($session_id)) {
             $session_data = '';
         }
 
@@ -107,7 +113,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function write($session_id, $session_data)
     {
-        return true === apcu_store($session_id, $session_data, $this->session_ttl);
+        return true === $this->redis->setex($session_id, $this->session_ttl, $session_data);
     }
 
     /**
@@ -115,8 +121,8 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function destroy($session_id)
     {
-        apcu_delete($session_id);
-        apcu_delete("{$session_id}_lock");
+        $this->redis->del($session_id);
+        $this->redis->del("{$session_id}_lock");
 
         return true;
     }
@@ -128,6 +134,8 @@ class RedisSessionHandler extends \SessionHandler
     {
         $this->releaseLocks();
 
+        $this->redis->close();
+
         return true;
     }
 
@@ -136,7 +144,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function gc($maxlifetime)
     {
-        // APCu does not need garbage collection, the builtin
+        // Redis does not need garbage collection, the builtin
         // TTL mechanism already takes care of stale sessions
 
         return true;
@@ -147,7 +155,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     private function acquireLockOn($session_id)
     {
-        while (false === apcu_add("{$session_id}_lock", true, $this->lock_ttl));
+        while (false === $this->redis->set("{$session_id}_lock", '', ['nx', 'ex' => $this->lock_ttl]));
 
         $this->open_sessions[] = $session_id;
     }
@@ -155,7 +163,7 @@ class RedisSessionHandler extends \SessionHandler
     private function releaseLocks()
     {
         foreach ($this->open_sessions as $session_id) {
-            apcu_delete("{$session_id}_lock");
+            $this->redis->del("{$session_id}_lock");
         }
 
         $this->open_sessions = [];
@@ -163,7 +171,7 @@ class RedisSessionHandler extends \SessionHandler
 
     /**
      * A session ID must be regenerated when it came from the HTTP
-     * request and can not be found in the APCu cache.
+     * request and can not be found in Redis.
      *
      * When that happens it means that an old session ID expired
      * or a malicious client is trying to pull of a session fixation attack.
@@ -175,6 +183,6 @@ class RedisSessionHandler extends \SessionHandler
     private function mustRegenerate($session_id)
     {
         return false === in_array($session_id, $this->new_sessions)
-            && false === apcu_exists($session_id);
+            && false === $this->redis->exists($session_id);
     }
 }
