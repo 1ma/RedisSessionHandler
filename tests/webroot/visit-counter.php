@@ -2,7 +2,7 @@
 
 // GET /visit-counter.php initialises a session and returns the number
 // of requests already made by a given user.
-// This is the main test script that exercises the APCuSessionHandler.
+// This is the main test script that exercises the RedisSessionHandler.
 
 require_once __DIR__.'/../../vendor/autoload.php';
 

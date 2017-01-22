@@ -30,7 +30,7 @@ class ConcurrentTest extends EndToEndTestCase
      * visits should be exactly REQUESTS_PER_TEST + 2
      *
      * This is the crucial test that exercises session locking. You can temporarily
-     * comment the spinlock in the APCuSessionHandler class to induce a concurrency bug.
+     * comment the spinlock in the RedisSessionHandler class to induce a concurrency bug.
      */
     public function testAuthenticatedRequests()
     {

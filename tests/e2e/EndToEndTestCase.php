@@ -14,7 +14,7 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * e2e test cases start creating a connection against the
-     * web server container.
+     * web server container and flushing the Redis database.
      */
     public function setUp()
     {
