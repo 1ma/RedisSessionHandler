@@ -86,8 +86,8 @@ class BasicTest extends EndToEndTestCase
     }
 
     /**
-     * This test sends a malicious request attempting to pull off
-     * a session fixation attack.
+     * This test sends a malicious request attempting a session
+     * fixation attack.
      *
      * After this, the response should have a 'Set-Cookie' header with
      * a newly generated ID and its body should be '1'. Redis should
