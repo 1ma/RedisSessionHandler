@@ -17,7 +17,7 @@ class BasicTest extends EndToEndTestCase
     public function testAnonymousRequest()
     {
         $response = $this->http->send(
-            new Request('GET', '/visit-counter.php', [], null, '1.0')
+            new Request('GET', '/visit-counter.php')
         );
 
         $this->assertSame('1', (string) $response->getBody());
@@ -39,11 +39,11 @@ class BasicTest extends EndToEndTestCase
     public function testUnrelatedAnonymousRequests()
     {
         $firstResponse = $this->http->send(
-            new Request('GET', '/visit-counter.php', [], null, '1.0')
+            new Request('GET', '/visit-counter.php')
         );
 
         $secondResponse = $this->http->send(
-            new Request('GET', '/visit-counter.php', [], null, '1.0')
+            new Request('GET', '/visit-counter.php')
         );
 
         $this->assertSame('1', (string) $firstResponse->getBody());
