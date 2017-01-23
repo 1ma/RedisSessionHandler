@@ -13,58 +13,65 @@ class ConcurrentTest extends EndToEndTestCase
     /**
      * This test sends a barrage of anonymous requests.
      *
-     * After this, the cache should contain exactly REQUESTS_PER_TEST entries.
+     * After this, Redis should contain exactly REQUESTS_PER_TEST entries.
      */
     public function testAnonymousRequests()
     {
         $this->massSend(
-            new Request('GET', '/visit-counter.php', [], null, '1.0')
+            new Request('GET', '/visit-counter.php')
         );
+
+        $this->assertSame(self::REQUESTS_PER_TEST, $this->redis->dbSize());
     }
 
     /**
      * This test first sends an anonymous request to trigger the creation of
      * a new session, then a barrage of authenticated requests, then a last request.
      *
-     * After this, the cache should contain exactly one entry, and it's number of
+     * After this, Redis should contain exactly one entry, and it's number of
      * visits should be exactly REQUESTS_PER_TEST + 2
      *
      * This is the crucial test that exercises session locking. You can temporarily
-     * comment the spinlock in the RedisSessionHandler class to induce a concurrency bug.
+     * comment the spinlock in the RedisSessionHandler class to induce concurrency
+     * bugs and see the test fail.
      */
     public function testAuthenticatedRequests()
     {
-        $firstResponse = $this->client->send(
-            new Request('GET', '/visit-counter.php', [], null, '1.0')
+        $firstResponse = $this->http->send(
+            new Request('GET', '/visit-counter.php')
         );
 
         $this->massSend(
-            new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse), null, '1.0')
+            new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse))
         );
 
-        $lastResponse = $this->client->send(
-            new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse), null, '1.0')
+        $lastResponse = $this->http->send(
+            new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse))
         );
 
         $this->assertSame(strval(self::REQUESTS_PER_TEST + 2), (string) $lastResponse->getBody());
+
+        $this->assertSame(1, $this->redis->dbSize());
     }
 
     /**
      * This test sends a barrage of requests attempting a session fixation attack.
      *
      * After this, the cache should contain exactly REQUESTS_PER_TEST entries.
-     * Finding just one entry in the cache would mean that the attack was successful.
+     * Finding just one entry in Redis would mean that the attack was successful.
      */
     public function testMaliciousRequests()
     {
         $this->massSend(
-            new Request('GET', '/visit-counter.php', ['Cookie' => 'PHPSESSID=madeupkey;'], null, '1.0')
+            new Request('GET', '/visit-counter.php', ['Cookie' => 'PHPSESSID=madeupkey;'])
         );
+
+        $this->assertSame(self::REQUESTS_PER_TEST, $this->redis->dbSize());
     }
 
     /**
-     * A helper that asynchronously sends multiple identical requests to the web server.
-     * It waits until all requests have been completed.
+     * A helper that asynchronously sends multiple identical requests to the web server,
+     * then waits for all those requests to complete.
      *
      * @param Request $request
      */
@@ -77,8 +84,8 @@ class ConcurrentTest extends EndToEndTestCase
         };
 
         (new Pool(
-            $this->client,
-            $replicator($request),
+            $this->http,
+            $replicator($request->withProtocolVersion('1.0')),
             ['concurrency' => self::CONCURRENCY_LEVEL]
         ))->promise()->wait();
     }

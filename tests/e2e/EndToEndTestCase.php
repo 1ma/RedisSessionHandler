@@ -10,7 +10,12 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @var Client
      */
-    protected $client;
+    protected $http;
+
+    /**
+     * @var \Redis
+     */
+    protected $redis;
 
     /**
      * e2e test cases start creating a connection against the
@@ -18,12 +23,11 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->client = new Client(['base_uri' => 'http://nginx']);
+        $this->http = new Client(['base_uri' => 'http://nginx']);
 
-        $redis = new \Redis();
-        $redis->connect('redis');
-
-        $redis->flushAll();
+        $this->redis = new \Redis();
+        $this->redis->connect('redis');
+        $this->redis->flushAll();
     }
 
     /**
@@ -35,7 +39,7 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return array
      *
-     * @example ['Cookie' => 'PHPSESSID=gf393t479t1s3uv263jklqq8o4;']
+     * @example ['Cookie' => 'PHPSESSID=urbigl47u82h0r9qke0q8jt23836j4gos5kebb0ed5ukiqepsau0;']
      */
     protected function prepareSessionHeader(Response $response)
     {
