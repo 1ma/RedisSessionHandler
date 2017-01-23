@@ -77,7 +77,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function open($save_path, $name)
     {
-        return $this->redis->connect('redis');
+        return $this->redis->connect($save_path);
     }
 
     /**
