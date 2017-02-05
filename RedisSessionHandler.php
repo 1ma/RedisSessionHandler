@@ -97,15 +97,15 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function read($session_id)
     {
-        $this->acquireLockOn($session_id);
-
         if ($this->mustRegenerate($session_id)) {
             // Regenerating the ID will call destroy(), close(), open(), create_sid() and read() in this order.
-            // It will also signal the PHP internals to include the 'Set-Cookie' with the new ID in the response.
+            // It will also signal the PHP internals to include the 'Set-Cookie' with the new ID in the HTTP response.
             session_regenerate_id(true);
 
-            $session_id = session_id();
+            return '';
         }
+
+        $this->acquireLockOn($session_id);
 
         if (false === $session_data = $this->redis->get($session_id)) {
             $session_data = '';
