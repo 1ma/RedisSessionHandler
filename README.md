@@ -5,7 +5,7 @@ An alternative Redis session handler featuring session locking and strict mode.
 
 ## Installation
 
-RedisSessionHandler requires PHP >=5.5 with the phpredis extension enabled and a reachable Redis instance running >=2.6. Add [`uma/redis-session-handler`](https://packagist.org/packages/uma/redis-session-handler) to the `composer.json` file:
+RedisSessionHandler requires PHP >=5.6 with the phpredis extension enabled and a reachable Redis instance running >=2.6. Add [`uma/redis-session-handler`](https://packagist.org/packages/uma/redis-session-handler) to the `composer.json` file:
 
     $ composer require uma/redis-session-handler
 
@@ -36,14 +36,14 @@ session.save_path = "tcp://1.2.3.4:6379"
 The Redis session handler bundled with [phpredis](https://github.com/phpredis/phpredis) has had a couple of rather serious
 bugs for years, namely the [lack of per-session locking](https://github.com/phpredis/phpredis/issues/37) and the [impossibility to protect against session fixation attacks](https://github.com/phpredis/phpredis/issues/37).
 
-This package provides a session handler built on top of the Redis extension that is not affected by these issues.
+This package provides a compatible session handler built on top of the Redis extension that is not affected by these issues.
 
 
 ### Session Locking explained
 
 In the context of PHP, "session locking" means that when multiple requests with the same session ID hit the server roughly
 at the same time, only one gets to run while the others get stuck waiting inside `session_start()`. Only when that first request
-calls [`session_write_close()`](http://php.net/manual/en/function.session-write-close.php), one of the others can move on.
+finishes or explicitly runs [`session_write_close()`](http://php.net/manual/en/function.session-write-close.php), one of the others can move on.
 
 When a session handler does not implement session locking concurrency bugs might start to surface under
 heavy traffic. I'll demonstrate the problem using the default phpredis handler and this simple script:
@@ -69,7 +69,7 @@ First, we send a single request that will setup a new session. Then we use the s
 the `Set-Cookie` header to send a burst of 200 concurrent, authenticated requests.
 
 ```bash
-1ma@werkbox:~$ http localhost/visit-counter.php
+1ma@home:~$ http localhost/visit-counter.php
 HTTP/1.1 200 OK
 Cache-Control: no-store, no-cache, must-revalidate
 Connection: keep-alive
@@ -83,7 +83,7 @@ Transfer-Encoding: chunked
 
 1
 
-1ma@werkbox:~$ hey -n 200 -H "Cookie: PHPSESSID=9mcjmlsh9gp0conq7i5rci7is8gfn6s0gh8r3eub3qpac09gnh21;" http://localhost/visit-counter.php
+1ma@home:~$ hey -n 200 -H "Cookie: PHPSESSID=9mcjmlsh9gp0conq7i5rci7is8gfn6s0gh8r3eub3qpac09gnh21;" http://localhost/visit-counter.php
 All requests done.
 
 Summary:
@@ -128,15 +128,15 @@ RedisSessionHandler solves this problem with a "lock" entry for every session th
 ### Session fixation explained
 
 [Session fixation](https://www.owasp.org/index.php/Session_fixation) is the ability to choose your own session ID as an HTTP client. When clients are allowed to choose their
-session IDs, a malicious attacker might be able to trick other users into using an ID already known to him, then let them log in and hijack their session.
+session IDs, a malicious attacker might be able to trick other clients into using an ID already known to him, then wait for them log in and hijack their session.
 
 Starting from PHP 5.5.2, there's an INI directive called [`session.use_strict_mode`](http://php.net/manual/en/session.configuration.php#ini.session.use-strict-mode) to protect
-PHP applications against such attacks. When "strict mode" is enabled and a random session ID is received, PHP should ignore it and generate a new
-one, just as if it was not there at all. Unfortunately the phpredis handler ignores that directive and always trust whatever session ID is received from
+PHP applications against such attacks. When "strict mode" is enabled and a unknown session ID is received, PHP should ignore it and generate a new
+one, just as if it was not received at all. Unfortunately the phpredis handler ignores that directive and always trust whatever session ID is received from
 the HTTP request.
 
 ```bash
-1ma@werkbox:~$ http -v http://localhost/visit-counter.php Cookie:PHPSESSID=madeupkey
+1ma@home:~$ http -v http://localhost/visit-counter.php Cookie:PHPSESSID=madeupkey
 GET / HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
@@ -155,7 +155,7 @@ Pragma: no-cache
 
 1
 
-1ma@werkbox:~$ redis-cli
+1ma@home:~$ redis-cli
 
 127.0.0.1:6379> keys *
 1) "PHPREDIS_SESSION:madeupkey"
@@ -167,26 +167,26 @@ Pragma: no-cache
 RedisSessionHandler also ignores the `session.use_strict_mode` directive but to do the opposite, i.e. make the above behaviour impossible.
 
 
-## Running the tests
+## Tests
 
 To run the tests you need Docker >=1.10 and docker-compose >=1.8. The next steps are spinning up the testing
 environment, downloading the dev dependencies and launching the test sutie.
 
 ```bash
-1ma@werkbox:~/RedisSessionHandler$ docker-compose -f tests/docker-compose.yml up -d
+1ma@home:~/RedisSessionHandler$ docker-compose -f tests/docker-compose.yml up -d
 Creating network "tests_default" with the default driver
 Creating tests_fpm_1
 Creating tests_redis_1
 Creating tests_nginx_1
 Creating tests_testrunner_1
 
-1ma@werkbox:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 composer install
+1ma@home:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 composer install
 Loading composer repositories with package information
 Installing dependencies (including require-dev) from lock file
 Nothing to install or update
 Generating autoload files
 
-1ma@werkbox:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 php vendor/bin/phpunit
+1ma@home:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 php vendor/bin/phpunit
 PHPUnit 4.8.31 by Sebastian Bergmann and contributors.
 
 .......
