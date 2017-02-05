@@ -17,6 +17,6 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.2",
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "^5.7"
     }
 }
