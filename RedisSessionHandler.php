@@ -8,6 +8,18 @@ namespace UMA;
 class RedisSessionHandler extends \SessionHandler
 {
     /**
+     * Wait time (1ms) after first locking attempt. It doubles
+     * for every unsuccessful retry until it either reaches
+     * MAX_WAIT_TIME or succeeds.
+     */
+    const MIN_WAIT_TIME = 1000;
+
+    /**
+     * Maximum wait time (128ms) between locking attempts.
+     */
+    const MAX_WAIT_TIME = 128000;
+
+    /**
      * @var \Redis
      */
     private $redis;
@@ -161,7 +173,15 @@ class RedisSessionHandler extends \SessionHandler
      */
     private function acquireLockOn($session_id)
     {
-        while (false === $this->redis->set("{$session_id}_lock", '', ['nx', 'ex' => $this->lock_ttl]));
+        $wait = self::MIN_WAIT_TIME;
+
+        while (false === $this->redis->set("{$session_id}_lock", '', ['nx', 'ex' => $this->lock_ttl])) {
+            usleep($wait);
+
+            if (self::MAX_WAIT_TIME > $wait) {
+                $wait *= 2;
+            }
+        }
 
         $this->open_sessions[] = $session_id;
     }
@@ -179,9 +199,9 @@ class RedisSessionHandler extends \SessionHandler
      * A session ID must be regenerated when it came from the HTTP
      * request and can not be found in Redis.
      *
-     * When that happens it either means that an old session expired in Redis
-     * but not in the browser, or a malicious client is trying to pull off
-     * a session fixation attack.
+     * When that happens it either means that old session data expired in Redis
+     * before the cookie with the session ID in the browser, or a malicious
+     * client is trying to pull off a session fixation attack.
      *
      * @param string $session_id
      *
