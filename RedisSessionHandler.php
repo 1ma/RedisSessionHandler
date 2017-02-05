@@ -66,8 +66,8 @@ class RedisSessionHandler extends \SessionHandler
         }
 
         $this->redis = new \Redis();
-        $this->lock_ttl = ini_get('max_execution_time');
-        $this->session_ttl = ini_get('session.gc_maxlifetime');
+        $this->lock_ttl = intval(ini_get('max_execution_time'));
+        $this->session_ttl = intval(ini_get('session.gc_maxlifetime'));
         $this->new_sessions = [];
         $this->open_sessions = [];
     }
