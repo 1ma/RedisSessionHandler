@@ -87,7 +87,7 @@ class RedisSessionHandler extends \SessionHandler
     {
         $id = parent::create_sid();
 
-        $this->new_sessions[] = $id;
+        $this->new_sessions[$id] = true;
 
         return $id;
     }
@@ -189,7 +189,7 @@ class RedisSessionHandler extends \SessionHandler
      */
     private function mustRegenerate($session_id)
     {
-        return false === in_array($session_id, $this->new_sessions)
+        return false === isset($this->new_sessions[$session_id])
             && false === $this->redis->exists($session_id);
     }
 }
