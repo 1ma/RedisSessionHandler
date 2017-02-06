@@ -1,5 +1,7 @@
 # RedisSessionHandler
 
+[![Build Status](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/build.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/?branch=master)
+
 An alternative Redis session handler featuring session locking and strict mode.
 
 
