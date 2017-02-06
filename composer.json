@@ -18,5 +18,14 @@
     "require-dev": {
         "guzzlehttp/guzzle": "^6.2",
         "phpunit/phpunit": "^5.7"
+    },
+    "scripts": {
+        "containers-up": "docker-compose -f tests/docker-compose.yml up -d",
+        "containers-down": "docker-compose -f tests/docker-compose.yml down -v",
+        "test": [
+            "@containers-up",
+            "docker exec -t tests_testrunner_1 sh -c 'php vendor/bin/phpunit'",
+            "@containers-down"
+        ]
     }
 }
