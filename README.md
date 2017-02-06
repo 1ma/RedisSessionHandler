@@ -34,7 +34,7 @@ session.save_path = "tcp://1.2.3.4:6379"
 ## Motivation
 
 The Redis session handler bundled with [phpredis](https://github.com/phpredis/phpredis) has had a couple of rather serious
-bugs for years, namely the [lack of per-session locking](https://github.com/phpredis/phpredis/issues/37) and the [impossibility to protect against session fixation attacks](https://github.com/phpredis/phpredis/issues/37).
+bugs for years, namely the [lack of per-session locking](https://github.com/phpredis/phpredis/issues/37) and the [impossibility to protect against session fixation attacks](https://github.com/phpredis/phpredis/issues/1033).
 
 This package provides a compatible session handler built on top of the Redis extension that is not affected by these issues.
 
@@ -48,7 +48,7 @@ finishes or explicitly runs [`session_write_close()`](http://php.net/manual/en/f
 When a session handler does not implement session locking concurrency bugs might start to surface under
 heavy traffic. I'll demonstrate the problem using the default phpredis handler and this simple script:
 
-```
+```php
 <?php
 
 // a script that returns the total number of
