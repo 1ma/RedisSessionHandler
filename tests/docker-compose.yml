@@ -22,6 +22,8 @@ services:
       - ./vhost.conf:/etc/nginx/conf.d/default.conf
   fpm:
     image: 1maa/php-fpm:7.0
+    depends_on:
+      - redis
     volumes:
       - ..:/var/www/redis-sessions.test
       - ./session_config.ini:/etc/php7/conf.d/session_config.ini
