@@ -2,12 +2,12 @@
 
 [![Build Status](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/build.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/?branch=master)
 
-An alternative Redis session handler featuring session locking and strict mode.
+An alternative Redis session handler featuring session locking and session fixation protection.
 
 
 ## Installation
 
-RedisSessionHandler requires PHP >=5.6 with the phpredis extension enabled and a reachable Redis instance running >=2.6. Add [`uma/redis-session-handler`](https://packagist.org/packages/uma/redis-session-handler) to the `composer.json` file:
+RedisSessionHandler requires PHP >=5.6 with the phpredis extension enabled and a Redis >=2.6 endpoint. Add [`uma/redis-session-handler`](https://packagist.org/packages/uma/redis-session-handler) to the `composer.json` file:
 
     $ composer require uma/redis-session-handler
 
@@ -100,7 +100,7 @@ Status code distribution:
 ```
 
 Everything looks fine from the outside, we got the expected two hundred OK responses, but if we peek inside the Redis
-database, we see that the counter is way off. Instead of 201 visits we see a random number that is way lower than that:
+database we see that the counter is way off. Instead of 201 visits we see a random number that is way lower than that:
 
 ```
 127.0.0.1:6379> KEYS *
@@ -113,7 +113,7 @@ database, we see that the counter is way off. Instead of 201 visits we see a ran
 Looking at Redis' `MONITOR` output we can see that under heavy load, Redis often executes two or more `GET` commands
 one after the other, thus returning the same number of visits to two or more different requests. When that happens, all
 those unlucky requests pass the same number of visits back to Redis, so some of them are ultimately lost. For instance, in this excerpt
-you can see how the 130th request is not accounted for.
+of the log you can see how the 130th request is not accounted for.
 
 ```
 1485174643.241711 [0 172.21.0.2:49780] "GET" "PHPREDIS_SESSION:9mcjmlsh9gp0conq7i5rci7is8gfn6s0gh8r3eub3qpac09gnh21"
