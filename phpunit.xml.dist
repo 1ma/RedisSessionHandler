@@ -10,6 +10,12 @@
     <testsuites>
         <testsuite>
             <directory>tests/e2e</directory>
+            <directory>tests/unit</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+        </whitelist>
+    </filter>
 </phpunit>

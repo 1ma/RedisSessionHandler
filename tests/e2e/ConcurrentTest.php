@@ -1,6 +1,6 @@
 <?php
 
-namespace UMA\RedisSessions\Tests;
+namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;

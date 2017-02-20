@@ -1,8 +1,9 @@
 <?php
 
-namespace UMA\RedisSessions\Tests;
+namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Psr7\Request;
+use UMA\SavePathParser;
 
 class BasicTest extends EndToEndTestCase
 {
@@ -104,6 +105,6 @@ class BasicTest extends EndToEndTestCase
         $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
 
         $this->assertSame(1, $this->redis->dbSize());
-        $this->assertFalse($this->redis->get('madeupkey'));
+        $this->assertFalse($this->redis->get(SavePathParser::DEFAULT_PREFIX.'madeupkey'));
     }
 }

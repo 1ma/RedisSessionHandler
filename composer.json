@@ -8,11 +8,14 @@
         "ext-redis": "*"
     },
     "autoload": {
-        "classmap": ["RedisSessionHandler.php"]
+        "psr-4": {
+            "UMA\\": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "UMA\\RedisSessions\\Tests\\": "tests/e2e"
+            "UMA\\RedisSessions\\Tests\\E2E\\": "tests/e2e",
+            "UMA\\RedisSessions\\Tests\\Unit\\": "tests/unit"
         }
     },
     "require-dev": {

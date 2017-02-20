@@ -89,7 +89,25 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function open($save_path, $name)
     {
-        return $this->redis->connect($save_path);
+        list(
+            $host, $port, $timeout, $prefix, $auth, $database
+        ) = SavePathParser::parse($save_path);
+
+        if (false === $this->redis->connect($host, $port, $timeout)) {
+            return false;
+        }
+
+        if (SavePathParser::DEFAULT_AUTH !== $auth) {
+            $this->redis->auth($auth);
+        }
+
+        if (SavePathParser::DEFAULT_DATABASE !== $database) {
+            $this->redis->select($database);
+        }
+
+        $this->redis->setOption(\Redis::OPT_PREFIX, $prefix);
+
+        return true;
     }
 
     /**
