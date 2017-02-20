@@ -7,8 +7,8 @@ use GuzzleHttp\Psr7\Request;
 
 class ConcurrentTest extends EndToEndTestCase
 {
-    const CONCURRENCY_LEVEL = 200;
-    const REQUESTS_PER_TEST = 2000;
+    const CONCURRENCY_LEVEL = 20;
+    const REQUESTS_PER_TEST = 200;
 
     /**
      * This test sends a barrage of anonymous requests.
