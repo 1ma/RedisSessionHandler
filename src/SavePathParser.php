@@ -48,7 +48,7 @@ class SavePathParser
             $parsed_path['host'] : $parsed_path['path'];
 
         $port = isset($parsed_path['port']) ?
-            intval($parsed_path['port']) : static::DEFAULT_PORT;
+            $parsed_path['port'] : static::DEFAULT_PORT;
 
         $options = [];
 
@@ -63,7 +63,7 @@ class SavePathParser
             $options['prefix'] : static::DEFAULT_PREFIX;
 
         $auth = isset($options['auth']) ?
-            $options['auth']: static::DEFAULT_AUTH;
+            $options['auth'] : static::DEFAULT_AUTH;
 
         $database = isset($options['database']) ?
             intval($options['database']) : static::DEFAULT_DATABASE;

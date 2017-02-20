@@ -26,11 +26,23 @@ session_set_save_handler(new \UMA\RedisSessionHandler(), true);
 
 Note that calling `session_set_save_handler` overwrites any value you might have set in the `session.save_handler` option
 of the php.ini file, so you don't need to change that. However, RedisSessionHandler still uses `session.save_path` to find
-the Redis server, just like the vanilla phpredis session handler.
+the Redis server, just like the vanilla phpredis session handler:
 
 ```ini
-session.save_path = "tcp://1.2.3.4:6379"
+; examples
+session.save_path = "localhost"
+session.save_path = "localhost?timeout=2.5"
+session.save_path = "tcp://1.2.3.4:5678?prefix=APP_SESSIONS:&database=2"
 ```
+
+Available query params:
+
+* `timeout` (float), default `0.0`, which means unlimited timeout
+* `prefix` (string), default `'PHPREDIS_SESSION:'`
+* `auth` (string), default `null`
+* `database` (int), default `0`
+
+Currently only a single host definition is supported.
 
 
 ## Motivation
