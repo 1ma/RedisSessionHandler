@@ -3,6 +3,7 @@
 namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use UMA\SavePathParser;
 
 class BasicTest extends EndToEndTestCase
@@ -22,8 +23,8 @@ class BasicTest extends EndToEndTestCase
         );
 
         $this->assertSame('1', (string) $response->getBody());
-        $this->assertTrue($response->hasHeader('Set-Cookie'));
-        $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
+
+        $this->assertCreatedNewSession($response);
 
         $this->assertSame(1, $this->redis->dbSize());
     }
@@ -49,10 +50,9 @@ class BasicTest extends EndToEndTestCase
 
         $this->assertSame('1', (string) $firstResponse->getBody());
         $this->assertSame('1', (string) $secondResponse->getBody());
-        $this->assertTrue($firstResponse->hasHeader('Set-Cookie'));
-        $this->assertTrue($secondResponse->hasHeader('Set-Cookie'));
-        $this->assertStringStartsWith('PHPSESSID=', $firstResponse->getHeaderLine('Set-Cookie'));
-        $this->assertStringStartsWith('PHPSESSID=', $secondResponse->getHeaderLine('Set-Cookie'));
+
+        $this->assertCreatedNewSession($firstResponse);
+        $this->assertCreatedNewSession($secondResponse);
         $this->assertNotSame($firstResponse->getHeaderLine('Set-Cookie'), $secondResponse->getHeaderLine('Set-Cookie'));
 
         $this->assertSame(2, $this->redis->dbSize());
@@ -79,9 +79,9 @@ class BasicTest extends EndToEndTestCase
 
         $this->assertSame('1', (string) $firstResponse->getBody());
         $this->assertSame('2', (string) $secondResponse->getBody());
-        $this->assertTrue($firstResponse->hasHeader('Set-Cookie'));
+
+        $this->assertCreatedNewSession($firstResponse);
         $this->assertFalse($secondResponse->hasHeader('Set-Cookie'));
-        $this->assertStringStartsWith('PHPSESSID=', $firstResponse->getHeaderLine('Set-Cookie'));
 
         $this->assertSame(1, $this->redis->dbSize());
     }
@@ -101,10 +101,51 @@ class BasicTest extends EndToEndTestCase
         );
 
         $this->assertSame('1', (string) $response->getBody());
-        $this->assertTrue($response->hasHeader('Set-Cookie'));
-        $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
+
+        $this->assertCreatedNewSession($response);
 
         $this->assertSame(1, $this->redis->dbSize());
         $this->assertFalse($this->redis->get(SavePathParser::DEFAULT_PREFIX.'madeupkey'));
+    }
+
+    /**
+     * This test checks that the server behaves correctly when a previously valid
+     * session ID is removed from Redis in between requests.
+     *
+     * @see https://github.com/1ma/RedisSessionHandler/issues/3
+     */
+    public function testFlushedDatabase()
+    {
+        $firstResponse = $this->http->send(
+            new Request('GET', '/visit-counter.php')
+        );
+
+        $this->assertSame('1', (string) $firstResponse->getBody());
+        $this->assertCreatedNewSession($firstResponse);
+
+        $this->redis->flushAll();
+
+        $this->assertSame(0, $this->redis->dbSize());
+
+        $secondResponse = $this->http->send(
+            new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse))
+        );
+
+        $this->assertSame('1', (string) $secondResponse->getBody());
+        $this->assertCreatedNewSession($secondResponse);
+
+        $this->assertSame(1, $this->redis->dbSize());
+    }
+
+    /**
+     * Asserts whether a received request triggered the creation of a new session.
+     * It does so by searching for and inspecting the 'Set-Cookie' header.
+     *
+     * @param Response $response
+     */
+    protected function assertCreatedNewSession(Response $response)
+    {
+        $this->assertTrue($response->hasHeader('Set-Cookie'));
+        $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
     }
 }
