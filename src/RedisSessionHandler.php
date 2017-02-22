@@ -20,6 +20,8 @@ class RedisSessionHandler extends \SessionHandler
     const MAX_WAIT_TIME = 128000;
 
     /**
+     * The Redis client.
+     *
      * @var \Redis
      */
     private $redis;
@@ -60,7 +62,7 @@ class RedisSessionHandler extends \SessionHandler
      *
      * @var string[]
      */
-    private $new_sessions;
+    private $new_sessions = [];
 
     /**
      * A collection of every session ID that is being locked by
@@ -69,7 +71,14 @@ class RedisSessionHandler extends \SessionHandler
      *
      * @var string[]
      */
-    private $open_sessions;
+    private $open_sessions = [];
+
+    /**
+     * The name of the session cookie.
+     *
+     * @var string
+     */
+    private $cookieName = null;
 
     public function __construct()
     {
@@ -80,8 +89,6 @@ class RedisSessionHandler extends \SessionHandler
         $this->redis = new \Redis();
         $this->lock_ttl = intval(ini_get('max_execution_time'));
         $this->session_ttl = intval(ini_get('session.gc_maxlifetime'));
-        $this->new_sessions = [];
-        $this->open_sessions = [];
     }
 
     /**
@@ -89,6 +96,8 @@ class RedisSessionHandler extends \SessionHandler
      */
     public function open($save_path, $name)
     {
+        $this->cookieName = $name;
+
         list(
             $host, $port, $timeout, $prefix, $auth, $database
         ) = SavePathParser::parse($save_path);
@@ -128,20 +137,18 @@ class RedisSessionHandler extends \SessionHandler
     public function read($session_id)
     {
         if ($this->mustRegenerate($session_id)) {
-            // Regenerating the ID will call destroy(), close(), open(), create_sid() and read() in this order.
-            // It will also signal the PHP internals to include the 'Set-Cookie' with the new ID in the HTTP response.
-            session_regenerate_id(true);
+            session_id($session_id = $this->create_sid());
 
-            return '';
+            setcookie($this->cookieName, $session_id);
         }
 
         $this->acquireLockOn($session_id);
 
-        if (false === $session_data = $this->redis->get($session_id)) {
-            $session_data = '';
+        if ($this->isNew($session_id)) {
+            return '';
         }
 
-        return $session_data;
+        return $this->redis->get($session_id);
     }
 
     /**
@@ -227,7 +234,17 @@ class RedisSessionHandler extends \SessionHandler
      */
     private function mustRegenerate($session_id)
     {
-        return false === isset($this->new_sessions[$session_id])
+        return false === $this->isNew($session_id)
             && false === $this->redis->exists($session_id);
+    }
+
+    /**
+     * @param string $session_id
+     *
+     * @return bool
+     */
+    private function isNew($session_id)
+    {
+        return isset($this->new_sessions[$session_id]);
     }
 }
