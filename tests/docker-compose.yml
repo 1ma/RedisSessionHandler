@@ -28,3 +28,8 @@ services:
       - ..:/var/www/redis-sessions.test
       - ./session_config.ini:/etc/php7/conf.d/session_config.ini
     working_dir: /var/www/redis-sessions.test
+  monitor:
+    image: redis:3.0-alpine
+    command: redis-cli -h redis MONITOR
+    depends_on:
+      - redis
