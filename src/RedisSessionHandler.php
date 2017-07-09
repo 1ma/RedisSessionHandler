@@ -199,8 +199,13 @@ class RedisSessionHandler extends \SessionHandler
     private function acquireLockOn($session_id)
     {
         $wait = self::MIN_WAIT_TIME;
+        if ($this->lock_ttl) {
+            $options = ['nx', 'ex' => $this->lock_ttl];
+        } else {
+            $options = ['nx'];
+        }
 
-        while (false === $this->redis->set("{$session_id}_lock", '', ['nx', 'ex' => $this->lock_ttl])) {
+        while (false === $this->redis->set("{$session_id}_lock", '', $options)) {
             usleep($wait);
 
             if (self::MAX_WAIT_TIME > $wait) {
