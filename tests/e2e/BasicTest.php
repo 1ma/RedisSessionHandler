@@ -138,6 +138,20 @@ class BasicTest extends EndToEndTestCase
     }
 
     /**
+     * This test checks that the server behaves correctly when a script is run that has no time limit
+     */
+    public function testUnlimitedExecutionTime()
+    {
+        $response = $this->http->send(
+            new Request('GET', '/visit-counter.php?with_no_time_limit')
+        );
+
+        $this->assertSame('1', (string) $response->getBody());
+        $this->assertCreatedNewSession($response);
+        $this->assertSame(1, $this->redis->dbSize());
+    }
+
+    /**
      * Asserts whether a received request triggered the creation of a new session.
      * It does so by searching for and inspecting the 'Set-Cookie' header.
      *
