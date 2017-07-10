@@ -27,7 +27,7 @@
         "env-rm": "docker-compose -f tests/docker-compose.yml down -v",
         "test": [
             "@env-up",
-            "docker exec -t tests_testrunner_1 sh -c 'php vendor/bin/phpunit'"
+            "docker exec -t tests_testrunner_1 sh -c 'vendor/bin/phpunit'"
         ]
     }
 }
