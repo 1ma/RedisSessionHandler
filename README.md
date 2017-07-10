@@ -45,6 +45,21 @@ Available query params:
 Currently only a single host definition is supported.
 
 
+## Known Caveats
+
+### Using RedisSessionHandler with the `max_execution_time` directive set to `0` is not recommended
+
+Whenever it can, the handler uses the `max_execution_time` directive as a hard timeout for the session lock. This is a
+last resort mechanism to release the session lock even if the PHP process crashes and the handler fails to do it itself.
+
+When `max_execution_time` is set to `0` (meaning there is no maximum execution time) this kind of hard timeout cannot be used, as the lock
+must be kept for as long as it takes to run the script, which is an unknown amount of time. This means that if for some unexpected reason
+the PHP process crashes and the handler fails to release the lock there would be no safe net and you'd end upwith a dangling lock
+that you'd need to delete manually.
+
+So when using RedisSessionHandler it is advised _not_ to disable `max_execution_time`.
+
+
 ## Motivation
 
 The Redis session handler bundled with [phpredis](https://github.com/phpredis/phpredis) has had a couple of rather serious
