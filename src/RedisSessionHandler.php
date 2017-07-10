@@ -138,8 +138,8 @@ class RedisSessionHandler extends \SessionHandler
     {
         if ($this->mustRegenerate($session_id)) {
             session_id($session_id = $this->create_sid());
-
-            setcookie($this->cookieName, $session_id);
+            $params = session_get_cookie_params();
+            setcookie($this->cookieName, $session_id, time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
 
         $this->acquireLockOn($session_id);

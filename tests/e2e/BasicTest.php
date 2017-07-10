@@ -109,6 +109,30 @@ class BasicTest extends EndToEndTestCase
     }
 
     /**
+     * This test sends a malicious request attempting a session
+     * fixation attack but uses custom cookie params.
+     *
+     * After this, the response should have a 'Set-Cookie' header with
+     * a newly generated ID and its body should be '1'. The cookie should
+     * have custom parameters as per visit-counter.php and Redis should
+     * have exactly one entry, and its key should not be 'madeupkey'.
+     */
+    public function testMaliciousRequestWithCustomCookieParams()
+    {
+        $response = $this->http->send(
+            new Request('GET', '/visit-counter.php?with_custom_cookie_params', ['Cookie' => 'PHPSESSID=madeupkey;'])
+        );
+
+        $this->assertSame('1', (string) $response->getBody());
+
+        $this->assertCustomCookieParams($response);
+
+        $this->assertSame(1, $this->redis->dbSize());
+        $this->assertFalse($this->redis->get(SavePathParser::DEFAULT_PREFIX.'madeupkey'));
+    }
+
+
+    /**
      * This test checks that the server behaves correctly when a previously valid
      * session ID is removed from Redis in between requests.
      *
@@ -162,4 +186,26 @@ class BasicTest extends EndToEndTestCase
         $this->assertTrue($response->hasHeader('Set-Cookie'));
         $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
     }
+
+    /**
+     * Asserts whether a received request triggered the creation of a new session with example custom parameters.
+     * It does so by searching for and inspecting the 'Set-Cookie' header.
+     * 
+     * Expected result:
+     * set-cookie:PHPSESSID=0691f472784601a324eadf78c05cf4c1; expires=Tue, 11-Jul-2017 14:58:34 GMT; Max-Age=86400; path=/; secure; HttpOnly
+     *
+     * @param Response $response
+     */
+    protected function assertCustomCookieParams(Response $response)
+    {
+        $this->assertTrue($response->hasHeader('Set-Cookie'));
+        $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
+        $this->assertRegExp('/expires=/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertRegExp('/path=/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertRegExp('/secure/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertRegExp('/HttpOnly/i', $response->getHeaderLine('Set-Cookie'));
+    }
 }
+
+
+
