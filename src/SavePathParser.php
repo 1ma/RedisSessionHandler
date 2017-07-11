@@ -32,6 +32,13 @@ class SavePathParser
      */
     const DEFAULT_DATABASE = 0;
 
+    const DEFAULT_OPTIONS = [
+        'timeout' => self::DEFAULT_TIMEOUT,
+        'prefix' => self::DEFAULT_PREFIX,
+        'auth' => self::DEFAULT_AUTH,
+        'database' => self::DEFAULT_DATABASE
+    ];
+
     /**
      * @param string $path The session.save_path parameter from php.ini
      *
@@ -50,24 +57,16 @@ class SavePathParser
         $port = isset($parsed_path['port']) ?
             $parsed_path['port'] : static::DEFAULT_PORT;
 
-        $options = [];
+        $opts = [];
 
         if (isset($parsed_path['query'])) {
-            parse_str($parsed_path['query'], $options);
+            parse_str($parsed_path['query'], $opts);
         }
 
-        $timeout = isset($options['timeout']) ?
-            (float)$options['timeout'] : static::DEFAULT_TIMEOUT;
+        $opts = array_merge(static::DEFAULT_OPTIONS, $opts);
 
-        $prefix = isset($options['prefix']) ?
-            $options['prefix'] : static::DEFAULT_PREFIX;
-
-        $auth = isset($options['auth']) ?
-            $options['auth'] : static::DEFAULT_AUTH;
-
-        $database = isset($options['database']) ?
-            intval($options['database']) : static::DEFAULT_DATABASE;
-
-        return [$host, $port, $timeout, $prefix, $auth, $database];
+        return [
+            $host, $port, (float) $opts['timeout'], $opts['prefix'], $opts['auth'], (int) $opts['database']
+        ];
     }
 }
