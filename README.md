@@ -54,10 +54,21 @@ last resort mechanism to release the session lock even if the PHP process crashe
 
 When `max_execution_time` is set to `0` (meaning there is no maximum execution time) this kind of hard timeout cannot be used, as the lock
 must be kept for as long as it takes to run the script, which is an unknown amount of time. This means that if for some unexpected reason
-the PHP process crashes and the handler fails to release the lock there would be no safe net and you'd end upwith a dangling lock
-that you'd need to delete manually.
+the PHP process crashes and the handler fails to release the lock there would be no safety net and you'd end up with a dangling lock
+that you'd have to purge by other means.
 
 So when using RedisSessionHandler it is advised _not_ to disable `max_execution_time`.
+
+
+### RedisSessionHandler does not support `session.use_trans_sid=1` nor `session.use_cookies=0`
+
+It just not work at all with [URL-based sessions](http://www.phpddt.com/usr/uploads/2013/09/2521893358.jpg). By design.
+
+
+### RedisSessionHandler ignores the `session.use_strict_mode` directive
+
+Because running PHP with strict mode disabled (which is the default!) does not make any sense whatsoever. RedisSessionHandler
+only works in strict mode. The _Session fixation_ section of this README explains what that means.
 
 
 ## Motivation
@@ -193,34 +204,75 @@ Pragma: no-cache
 "visits|i:1;"
 ```
 
-RedisSessionHandler also ignores the `session.use_strict_mode` directive but to do the opposite, i.e. make the above behaviour impossible.
+Hence RedisSessionHandler only works in strict mode. It only accepts external session IDs
+that are already inside the Redis store.
 
 
-## Tests
+## Testing
 
-To run the tests you need Docker >=1.10 and docker-compose >=1.8. The next steps are spinning up the testing
-environment, downloading the dev dependencies and launching the test sutie.
+### Running the tests
+
+To do that you'll need Docker >=1.10 and docker-compose >=1.8.
+
+In order to run the integration test suite just type `composer test` and it will take care of installing
+the dev dependencies, setting up the testing containers and running the tests.
 
 ```bash
-1ma@home:~/RedisSessionHandler$ docker-compose -f tests/docker-compose.yml up -d
-Creating network "tests_default" with the default driver
-Creating tests_fpm_1
-Creating tests_redis_1
-Creating tests_nginx_1
-Creating tests_testrunner_1
-
-1ma@home:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 composer install
+1ma@home:~/RedisSessionHandler$ composer test
 Loading composer repositories with package information
 Installing dependencies (including require-dev) from lock file
 Nothing to install or update
 Generating autoload files
+> docker-compose -f tests/docker-compose.yml up -d
+tests_redis_1 is up-to-date
+tests_fpm_1 is up-to-date
+tests_monitor_1 is up-to-date
+tests_nginx_1 is up-to-date
+tests_testrunner_1 is up-to-date
+> docker exec -t tests_testrunner_1 sh -c 'vendor/bin/phpunit'
+stty: standard input
+PHPUnit 5.7.21 by Sebastian Bergmann and contributors.
 
-1ma@home:~/RedisSessionHandler$ docker exec -it tests_testrunner_1 php vendor/bin/phpunit
-PHPUnit 4.8.31 by Sebastian Bergmann and contributors.
+................           16 / 16 (100%)
 
-.......
+Time: 582 ms, Memory: 6.00MB
 
-Time: 22.74 seconds, Memory: 8.00MB
+OK (16 tests, 54 assertions)
+```
 
-OK (7 tests, 27 assertions)
+
+### Running the tests against the native phpredis handler
+
+You can easily run the same test suite against the native phpredis handler.
+
+To do so, comment out the line in `tests/webroot/visit-counter.php` where RedisSessionHandler is
+enabled and the FPM container will automatically choose the phpredis save handler (version 3.1.2 at the time of writing).
+
+```php
+// session_set_save_handler(new \UMA\RedisSessionHandler(), true);
+```
+
+```bash
+1ma@home:~/RedisSessionHandler$ composer test
+Loading composer repositories with package information
+Installing dependencies (including require-dev) from lock file
+Nothing to install or update
+Generating autoload files
+> docker-compose -f tests/docker-compose.yml up -d
+tests_redis_1 is up-to-date
+tests_monitor_1 is up-to-date
+tests_fpm_1 is up-to-date
+tests_nginx_1 is up-to-date
+tests_testrunner_1 is up-to-date
+> docker exec -t tests_testrunner_1 sh -c 'vendor/bin/phpunit'
+stty: standard input
+PHPUnit 5.7.21 by Sebastian Bergmann and contributors.
+
+...FFF..FF......           16 / 16 (100%)
+
+Time: 695 ms, Memory: 6.00MB
+
+There were 5 failures:
+
+~~snip~~
 ```

@@ -23,7 +23,10 @@
         "phpunit/phpunit": "^5.7"
     },
     "scripts": {
-        "env-up": "docker-compose -f tests/docker-compose.yml up -d",
+        "env-up": [
+            "@composer install --ignore-platform-reqs",
+            "docker-compose -f tests/docker-compose.yml up -d"
+        ],
         "env-rm": "docker-compose -f tests/docker-compose.yml down -v",
         "test": [
             "@env-up",
