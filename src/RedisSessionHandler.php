@@ -87,8 +87,8 @@ class RedisSessionHandler extends \SessionHandler
         }
 
         $this->redis = new \Redis();
-        $this->lock_ttl = intval(ini_get('max_execution_time'));
-        $this->session_ttl = intval(ini_get('session.gc_maxlifetime'));
+        $this->lock_ttl = (int)ini_get('max_execution_time');
+        $this->session_ttl = (int)ini_get('session.gc_maxlifetime');
     }
 
     /**
@@ -198,13 +198,12 @@ class RedisSessionHandler extends \SessionHandler
      */
     private function acquireLockOn($session_id)
     {
-        $wait = self::MIN_WAIT_TIME;
-        if ($this->lock_ttl) {
+        $options = ['nx'];
+        if (0 < $this->lock_ttl) {
             $options = ['nx', 'ex' => $this->lock_ttl];
-        } else {
-            $options = ['nx'];
         }
 
+        $wait = self::MIN_WAIT_TIME;
         while (false === $this->redis->set("{$session_id}_lock", '', $options)) {
             usleep($wait);
 

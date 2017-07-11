@@ -57,7 +57,7 @@ class SavePathParser
         }
 
         $timeout = isset($options['timeout']) ?
-            floatval($options['timeout']) : static::DEFAULT_TIMEOUT;
+            (float)$options['timeout'] : static::DEFAULT_TIMEOUT;
 
         $prefix = isset($options['prefix']) ?
             $options['prefix'] : static::DEFAULT_PREFIX;

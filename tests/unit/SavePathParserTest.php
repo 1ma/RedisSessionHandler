@@ -14,7 +14,7 @@ class SavePathParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParsing($savePath, array $expectedParsing)
     {
-        $this->assertSame($expectedParsing, SavePathParser::parse($savePath));
+        self::assertSame($expectedParsing, SavePathParser::parse($savePath));
     }
 
     public function savePathsProvider()
