@@ -23,7 +23,7 @@ class EndToEndTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->http = new Client(['base_uri' => 'http://nginx']);
+        $this->http = new Client(['base_uri' => "http://{$_SERVER['TARGET']}"]);
 
         $this->redis = new \Redis();
         $this->redis->connect('redis');
