@@ -2,9 +2,10 @@
 
 namespace UMA\RedisSessions\Tests\Unit;
 
+use PHPUnit\Framework\TestCase;
 use UMA\SavePathParser;
 
-class SavePathParserTest extends \PHPUnit_Framework_TestCase
+class SavePathParserTest extends TestCase
 {
     /**
      * @param string $savePath

@@ -4,8 +4,9 @@ namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 
-class EndToEndTestCase extends \PHPUnit_Framework_TestCase
+class EndToEndTestCase extends TestCase
 {
     /**
      * @var Client
