@@ -1,0 +1,32 @@
+### [0.9.5] - 2017-07-13
+
+  * (Bugfix) Made the handler acknowledge custom session cookie parameters set with `session_set_cookie_params` (contributed by [@scottlucas](https://github.com/scottlucas))
+  * (Improvement) Expanded integration tests to cover all supported major versions of PHP (5.6, 7.0 and 7.1).
+
+### [0.9.4] - 2017-07-10
+
+  * (Bugfix) Prevented the handler from hanging when the `max_execution_time` directive is set to `0` (contributed by [@scottlucas](https://github.com/scottlucas))
+
+### [0.9.3] - 2017-04-28
+
+  * (Bugfix) Made the handler compatible with PHP +7.1.2 by avoiding the call to `session_regenerate_id` inside the handler.
+
+### [0.9.2] - 2017-02-20
+
+  * (Improvement) Set up continuous integration based on Scrutinizer.
+  * (Feature) Added support for `timeout`, `prefix`, `auth` and `database` query params on the `session.save_path` directive, as in the native handler.
+
+### [0.9.1] - 2017-02-05
+
+  * (Improvement) Introduced exponential backoff between session locking attempts.
+  * (Improvement) A session ID is now never locked before checking that it doesn't need to be regenerated.
+
+### 0.9.0 - 2017-02-05
+
+  * Initial pre-release
+
+[0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
+[0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.3...v0.9.4
+[0.9.3]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.0...v0.9.1

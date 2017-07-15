@@ -62,7 +62,7 @@ So when using RedisSessionHandler it is advised _not_ to disable `max_execution_
 
 ### RedisSessionHandler does not support `session.use_trans_sid=1` nor `session.use_cookies=0`
 
-It just not work at all with [URL-based sessions](http://www.phpddt.com/usr/uploads/2013/09/2521893358.jpg). By design.
+It just don't work at all with [URL-based sessions](http://www.phpddt.com/usr/uploads/2013/09/2521893358.jpg). By design.
 
 
 ### RedisSessionHandler ignores the `session.use_strict_mode` directive
@@ -109,7 +109,7 @@ First, we send a single request that will setup a new session. Then we use the s
 the `Set-Cookie` header to send a burst of 200 concurrent, authenticated requests.
 
 ```bash
-1ma@home:~$ http localhost/visit-counter.php
+$ http localhost/visit-counter.php
 HTTP/1.1 200 OK
 Cache-Control: no-store, no-cache, must-revalidate
 Connection: keep-alive
@@ -123,7 +123,7 @@ Transfer-Encoding: chunked
 
 1
 
-1ma@home:~$ hey -n 200 -H "Cookie: PHPSESSID=9mcjmlsh9gp0conq7i5rci7is8gfn6s0gh8r3eub3qpac09gnh21;" http://localhost/visit-counter.php
+$ hey -n 200 -H "Cookie: PHPSESSID=9mcjmlsh9gp0conq7i5rci7is8gfn6s0gh8r3eub3qpac09gnh21;" http://localhost/visit-counter.php
 All requests done.
 
 Summary:
@@ -176,7 +176,7 @@ one, just as if it was not received at all. Unfortunately the phpredis handler i
 the HTTP request.
 
 ```bash
-1ma@home:~$ http -v http://localhost/visit-counter.php Cookie:PHPSESSID=madeupkey
+$ http -v http://localhost/visit-counter.php Cookie:PHPSESSID=madeupkey
 GET / HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate
@@ -195,7 +195,7 @@ Pragma: no-cache
 
 1
 
-1ma@home:~$ redis-cli
+$ redis-cli
 
 127.0.0.1:6379> keys *
 1) "PHPREDIS_SESSION:madeupkey"
@@ -218,24 +218,44 @@ In order to run the integration test suite just type `composer test` and it will
 the dev dependencies, setting up the testing containers and running the tests.
 
 ```bash
-1ma@home:~/RedisSessionHandler$ composer test
+$ composer test
 Loading composer repositories with package information
 Installing dependencies (including require-dev) from lock file
 Nothing to install or update
 Generating autoload files
 > docker-compose -f tests/docker-compose.yml up -d
 tests_redis_1 is up-to-date
-tests_fpm_1 is up-to-date
-tests_monitor_1 is up-to-date
+tests_fpm56_1 is up-to-date
+tests_fpm71_1 is up-to-date
+tests_fpm70_1 is up-to-date
+tests_redis_monitor_1 is up-to-date
 tests_nginx_1 is up-to-date
-tests_testrunner_1 is up-to-date
-> docker exec -t tests_testrunner_1 sh -c 'vendor/bin/phpunit'
+tests_runner_1 is up-to-date
+> docker exec -t tests_runner_1 sh -c "TARGET=php56 vendor/bin/phpunit"
 stty: standard input
-PHPUnit 5.7.21 by Sebastian Bergmann and contributors.
+PHPUnit 6.2.3 by Sebastian Bergmann and contributors.
 
 ................           16 / 16 (100%)
 
-Time: 582 ms, Memory: 6.00MB
+Time: 1.39 seconds, Memory: 4.00MB
+
+OK (16 tests, 54 assertions)
+> docker exec -t tests_runner_1 sh -c "TARGET=php70 vendor/bin/phpunit"
+stty: standard input
+PHPUnit 6.2.3 by Sebastian Bergmann and contributors.
+
+................           16 / 16 (100%)
+
+Time: 1.29 seconds, Memory: 4.00MB
+
+OK (16 tests, 54 assertions)
+> docker exec -t tests_runner_1 sh -c "TARGET=php71 vendor/bin/phpunit"
+stty: standard input
+PHPUnit 6.2.3 by Sebastian Bergmann and contributors.
+
+................           16 / 16 (100%)
+
+Time: 1.08 seconds, Memory: 4.00MB
 
 OK (16 tests, 54 assertions)
 ```
@@ -253,26 +273,53 @@ enabled and the FPM container will automatically choose the phpredis save handle
 ```
 
 ```bash
-1ma@home:~/RedisSessionHandler$ composer test
+$ composer test
 Loading composer repositories with package information
 Installing dependencies (including require-dev) from lock file
 Nothing to install or update
 Generating autoload files
 > docker-compose -f tests/docker-compose.yml up -d
 tests_redis_1 is up-to-date
-tests_monitor_1 is up-to-date
-tests_fpm_1 is up-to-date
+tests_fpm56_1 is up-to-date
+tests_fpm71_1 is up-to-date
+tests_fpm70_1 is up-to-date
+tests_redis_monitor_1 is up-to-date
 tests_nginx_1 is up-to-date
-tests_testrunner_1 is up-to-date
-> docker exec -t tests_testrunner_1 sh -c 'vendor/bin/phpunit'
+tests_runner_1 is up-to-date
+> docker exec -t tests_runner_1 sh -c "TARGET=php56 vendor/bin/phpunit"
 stty: standard input
-PHPUnit 5.7.21 by Sebastian Bergmann and contributors.
+PHPUnit 6.2.3 by Sebastian Bergmann and contributors.
 
 ...FFF..FF......           16 / 16 (100%)
 
-Time: 695 ms, Memory: 6.00MB
+Time: 1.15 seconds, Memory: 4.00MB
 
 There were 5 failures:
 
 ~~snip~~
+```
+
+
+### Manual testing
+
+The `docker-compose.yml` file is configured to expose a random TCP port linked to the nginx container port 80. After running
+`composer env-up` or `composer test` you can see which one was assigned with `docker ps`. With that knowledge you can
+poke the testing webserver directly from your local machine using either a regular browser, cURL, wrk or similar tools.
+
+Depending on your Docker setup you might need to replace `localhost` with the IP of the virtual machine that actually runs the Docker daemon:
+
+```bash
+$ curl -i localhost:32768/visit-counter.php?with_custom_cookie_params
+HTTP/1.1 200 OK
+Server: nginx/1.13.1
+Date: Sat, 15 Jul 2017 09:40:25 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Set-Cookie: PHPSESSID=tqm3akv0t5gdf25lf1gcspn479aa989jp0mltc3nuun2b47c7g10; expires=Sun, 16-Jul-2017 09:40:25 GMT; Max-Age=86400; path=/; secure; HttpOnly
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+
+1
 ```
