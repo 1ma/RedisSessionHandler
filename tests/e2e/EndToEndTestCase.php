@@ -9,6 +9,12 @@ use PHPUnit\Framework\TestCase;
 class EndToEndTestCase extends TestCase
 {
     /**
+     * Hostname where to send the HTTP requests
+     * when $_SERVER['TARGET'] is not available.
+     */
+    const DEFAULT_TARGET = 'php56';
+
+    /**
      * @var Client
      */
     protected $http;
@@ -24,7 +30,10 @@ class EndToEndTestCase extends TestCase
      */
     public function setUp()
     {
-        $this->http = new Client(['base_uri' => "http://{$_SERVER['TARGET']}"]);
+        $target = isset($_SERVER['TARGET']) ?
+            $_SERVER['TARGET'] : self::DEFAULT_TARGET;
+
+        $this->http = new Client(['base_uri' => "http://$target"]);
 
         $this->redis = new \Redis();
         $this->redis->connect('redis');
