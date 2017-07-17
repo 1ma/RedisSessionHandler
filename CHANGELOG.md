@@ -21,12 +21,13 @@
   * (Improvement) Introduced exponential backoff between session locking attempts.
   * (Improvement) A session ID is now never locked before checking that it doesn't need to be regenerated.
 
-### 0.9.0 - 2017-02-05
+### [0.9.0] - 2017-02-05
 
   * Initial pre-release
 
-[0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
+[0.9.5]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/1ma/RedisSessionHandler/tree/b6b149a3d5322e49a3c4c933ed8154ad3da30570
