@@ -62,7 +62,11 @@ So when using RedisSessionHandler it is advised _not_ to disable `max_execution_
 
 ### RedisSessionHandler does not support `session.use_trans_sid=1` nor `session.use_cookies=0`
 
-It just don't work at all with [URL-based sessions](http://www.phpddt.com/usr/uploads/2013/09/2521893358.jpg). By design.
+When these directives are set this way PHP switches from using cookies to passing the session ID around as a query param, as seen in this vintage screenshot:
+
+![trans_sid sessions](http://image.fiw3.com/usr/uploads/2013/09/2521893358.jpg)
+
+RedisSessionHandler cannot work in this mode. _This is by design_.
 
 
 ### RedisSessionHandler ignores the `session.use_strict_mode` directive
