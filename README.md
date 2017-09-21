@@ -1,6 +1,6 @@
 # RedisSessionHandler
 
-[![Build Status](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/build.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/build.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/1ma/RedisSessionHandler/?branch=master) [![Latest Stable Version](https://poser.pugx.org/uma/redis-session-handler/v/stable)](https://packagist.org/packages/uma/redis-session-handler) [![Monthly Downloads](https://poser.pugx.org/uma/redis-session-handler/d/monthly)](https://packagist.org/packages/uma/redis-session-handler)
 
 An alternative Redis session handler featuring session locking and session fixation protection.
 
