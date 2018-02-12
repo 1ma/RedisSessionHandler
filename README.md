@@ -55,16 +55,14 @@ last resort mechanism to release the session lock even if the PHP process crashe
 When `max_execution_time` is set to `0` (meaning there is no maximum execution time) this kind of hard timeout cannot be used, as the lock
 must be kept for as long as it takes to run the script, which is an unknown amount of time. This means that if for some unexpected reason
 the PHP process crashes and the handler fails to release the lock there would be no safety net and you'd end up with a dangling lock
-that you'd have to purge by other means.
+that you'd have to detect and purge by other means.
 
 So when using RedisSessionHandler it is advised _not_ to disable `max_execution_time`.
 
 
 ### RedisSessionHandler does not support `session.use_trans_sid=1` nor `session.use_cookies=0`
 
-When these directives are set this way PHP switches from using cookies to passing the session ID around as a query param, as seen in this vintage screenshot:
-
-![trans_sid sessions](http://image.fiw3.com/usr/uploads/2013/09/2521893358.jpg)
+When these directives are set this way PHP switches from using cookies to passing the session ID around as a query param.
 
 RedisSessionHandler cannot work in this mode. _This is by design_.
 
