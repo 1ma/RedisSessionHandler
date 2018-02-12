@@ -7,7 +7,7 @@ coding_style:
     php: {  }
 build:
     environment:
-        php: '7.1'
+        php: '7.2'
         docker: true
     tests:
         override:

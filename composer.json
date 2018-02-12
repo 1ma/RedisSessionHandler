@@ -32,7 +32,8 @@
             "@env-up",
             "docker exec -t tests_runner_1 sh -c \"TARGET=php56 vendor/bin/phpunit\"",
             "docker exec -t tests_runner_1 sh -c \"TARGET=php70 vendor/bin/phpunit\"",
-            "docker exec -t tests_runner_1 sh -c \"TARGET=php71 vendor/bin/phpunit\""
+            "docker exec -t tests_runner_1 sh -c \"TARGET=php71 vendor/bin/phpunit\"",
+            "docker exec -t tests_runner_1 sh -c \"TARGET=php72 vendor/bin/phpunit\""
         ]
     }
 }
