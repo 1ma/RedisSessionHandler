@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
-class EndToEndTestCase extends TestCase
+abstract class EndToEndTestCase extends TestCase
 {
     /**
      * Hostname where to send the HTTP requests
