@@ -78,8 +78,11 @@ class RedisSessionHandler extends \SessionHandler
      *
      * @var string
      */
-    private $cookieName = null;
+    private $cookieName;
 
+    /**
+     * @throws \RuntimeException When the phpredis extension is not available.
+     */
     public function __construct()
     {
         if (false === extension_loaded('redis')) {
@@ -139,7 +142,15 @@ class RedisSessionHandler extends \SessionHandler
         if ($this->mustRegenerate($session_id)) {
             session_id($session_id = $this->create_sid());
             $params = session_get_cookie_params();
-            setcookie($this->cookieName, $session_id, $params['lifetime'] ? time() + $params['lifetime'] : 0, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            setcookie(
+                $this->cookieName,
+                $session_id,
+                $params['lifetime'] ? time() + $params['lifetime'] : 0,
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
+            );
         }
 
         $this->acquireLockOn($session_id);
