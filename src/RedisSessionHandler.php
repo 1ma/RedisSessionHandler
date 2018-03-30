@@ -250,7 +250,7 @@ class RedisSessionHandler extends \SessionHandler
     private function mustRegenerate($session_id)
     {
         return false === $this->isNew($session_id)
-            && false === $this->redis->exists($session_id);
+            && false === (bool) $this->redis->exists($session_id);
     }
 
     /**
