@@ -1,3 +1,9 @@
+### [0.9.6] - 2018-03-31
+
+  * (Bugfix) Fixed regenerated sessions expiration date (contributed by [@kavacky](https://github.com/kavacky))
+  * (Bugfix) Fixed a phpredis 4.0 BC break in the return type of the `exists()` function.
+  * (Improvement) PHP 7.2 was released since 0.9.5, and a 7.2 FPM daemon has been added to the test pool.
+
 ### [0.9.5] - 2017-07-13
 
   * (Bugfix) Made the handler acknowledge custom session cookie parameters set with `session_set_cookie_params` (contributed by [@scottlucas](https://github.com/scottlucas))
@@ -25,6 +31,7 @@
 
   * Initial pre-release
 
+[0.9.6]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.2...v0.9.3
