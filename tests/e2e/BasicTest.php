@@ -93,6 +93,10 @@ class BasicTest extends EndToEndTestCase
      * After this, the response should have a 'Set-Cookie' header with
      * a newly generated ID and its body should be '1'. Redis should
      * have exactly one entry, and its key should not be 'madeupkey'.
+     *
+     * Additionally, the Set-Cookie header MUST NOT have an 'expires' tag. This
+     * was a bug where a forcefully regenerated session ID used to be stamped
+     * with an instant expiration time.
      */
     public function testMaliciousRequest()
     {
@@ -103,6 +107,7 @@ class BasicTest extends EndToEndTestCase
         $this->assertSame('1', (string) $response->getBody());
 
         $this->assertCreatedNewSession($response);
+        $this->assertNotRegExp('/expires=/i', $response->getHeaderLine('Set-Cookie'));
 
         $this->assertSame(1, $this->redis->dbSize());
         $this->assertFalse($this->redis->get(SavePathParser::DEFAULT_PREFIX.'madeupkey'));
