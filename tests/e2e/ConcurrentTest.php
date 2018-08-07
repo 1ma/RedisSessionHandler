@@ -49,7 +49,7 @@ class ConcurrentTest extends EndToEndTestCase
             new Request('GET', '/visit-counter.php', $this->prepareSessionHeader($firstResponse))
         );
 
-        $this->assertSame(strval(self::REQUESTS_PER_TEST + 2), (string) $lastResponse->getBody());
+        $this->assertSame((string)(self::REQUESTS_PER_TEST + 2), (string) $lastResponse->getBody());
 
         $this->assertSame(1, $this->redis->dbSize());
     }

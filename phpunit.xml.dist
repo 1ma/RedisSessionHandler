@@ -8,7 +8,7 @@
          bootstrap="vendor/autoload.php"
 >
     <testsuites>
-        <testsuite>
+        <testsuite name="uma/redis-session-handler test suite">
             <directory>tests/e2e</directory>
             <directory>tests/unit</directory>
         </testsuite>

@@ -5,6 +5,13 @@
 An alternative Redis session handler featuring session locking and session fixation protection.
 
 
+## News
+
+* phpredis v4.1.0 (released on 2018-07-10) added support for session locking, but it is disabled by default. To enable
+  it you must set the new `redis.session.locking_enabled` INI directive to `true`. This version is the first to pass
+  the test in `ConcurrentTest` that stresses the locking mechanism.
+
+
 ## Installation
 
 RedisSessionHandler requires PHP >=5.6 with the phpredis extension enabled and a Redis >=2.6 endpoint. Add [`uma/redis-session-handler`](https://packagist.org/packages/uma/redis-session-handler) to the `composer.json` file:
