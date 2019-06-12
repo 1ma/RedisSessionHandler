@@ -9,14 +9,14 @@ services:
       - ..:/var/www/redis-sessions.test
     working_dir: /var/www/redis-sessions.test
   redis:
-    image: redis:3.0-alpine
+    image: redis:5.0-alpine
   redis_monitor:
-    image: redis:3.0-alpine
+    image: redis:5.0-alpine
     command: redis-cli -h redis MONITOR
     depends_on:
       - redis
   nginx:
-    image: nginx:1.13-alpine
+    image: nginx:1.17-alpine
     depends_on:
       - fpm56
       - fpm70
