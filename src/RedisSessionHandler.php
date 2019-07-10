@@ -159,7 +159,7 @@ class RedisSessionHandler extends \SessionHandler
             return '';
         }
 
-        return $this->redis->get($session_id);
+        return (string)$this->redis->get($session_id);
     }
 
     /**
