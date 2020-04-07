@@ -1,3 +1,10 @@
+### [0.9.7] - 2020-04-07
+
+  * (Improvement) Implemented support for Unix paths as means to connect to a Redis server.
+  * (Bugfix) Ensure RedisSessionHandler::read() always returns a string (contributed by [therosco](https://github.com/therosco)).
+  * (Docs) Acknowledged `redis.session.locking_enabled` INI directive from the native extension (starting from v4.1.0).
+  * (Improvement) Updated versions of testing containers.
+
 ### [0.9.6] - 2018-03-31
 
   * (Bugfix) Fixed regenerated sessions expiration date (contributed by [@kavacky](https://github.com/kavacky))
@@ -31,6 +38,7 @@
 
   * Initial pre-release
 
+[0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.3...v0.9.4

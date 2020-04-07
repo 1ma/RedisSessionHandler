@@ -40,6 +40,8 @@ the Redis server, just like the vanilla phpredis session handler:
 session.save_path = "localhost"
 session.save_path = "localhost?timeout=2.5"
 session.save_path = "tcp://1.2.3.4:5678?prefix=APP_SESSIONS:&database=2"
+session.save_path = "unix:///var/run/redis.sock"
+session.save_path = "/var/run/redis.sock?database=2"
 ```
 
 Available query params:
@@ -50,6 +52,8 @@ Available query params:
 * `database` (int), default `0`
 
 Currently only a single host definition is supported.
+
+Note than when connecting through a Unix socket the timeout is ignored.
 
 
 ## Known Caveats
