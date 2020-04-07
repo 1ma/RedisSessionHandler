@@ -29,6 +29,14 @@ class SavePathParserTest extends TestCase
                 '1.2.3.4',
                 ['1.2.3.4', SavePathParser::DEFAULT_PORT, SavePathParser::DEFAULT_TIMEOUT, SavePathParser::DEFAULT_PREFIX, SavePathParser::DEFAULT_AUTH, SavePathParser::DEFAULT_DATABASE]
             ],
+            'Unix path URI' => [
+                'unix:///var/run/redis/redis.sock?database=3',
+                ['/var/run/redis/redis.sock', SavePathParser::DEFAULT_PORT, SavePathParser::DEFAULT_TIMEOUT, SavePathParser::DEFAULT_PREFIX, SavePathParser::DEFAULT_AUTH, 3]
+            ],
+            'Unix path URI without prefix' => [
+                '/var/run/redis/redis.sock?database=3',
+                ['/var/run/redis/redis.sock', SavePathParser::DEFAULT_PORT, SavePathParser::DEFAULT_TIMEOUT, SavePathParser::DEFAULT_PREFIX, SavePathParser::DEFAULT_AUTH, 3]
+            ],
             'with port' => [
                 'localhost:1234',
                 ['localhost', 1234, SavePathParser::DEFAULT_TIMEOUT, SavePathParser::DEFAULT_PREFIX, SavePathParser::DEFAULT_AUTH, SavePathParser::DEFAULT_DATABASE]
