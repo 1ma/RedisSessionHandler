@@ -105,8 +105,17 @@ class RedisSessionHandler extends \SessionHandler
             $host, $port, $timeout, $prefix, $auth, $database
         ) = SavePathParser::parse($save_path);
 
-        if (false === $this->redis->connect($host, $port, $timeout)) {
-            return false;
+        // When $host is a Unix socket path redis->connect() will fail if
+        // supplied with any other of the optional parameters, even if they
+        // are the default values.
+        if (file_exists($host)) {
+            if (false === $this->redis->connect($host)) {
+                return false;
+            }
+        } else {
+            if (false === $this->redis->connect($host, $port, $timeout)) {
+                return false;
+            }
         }
 
         if (SavePathParser::DEFAULT_AUTH !== $auth) {

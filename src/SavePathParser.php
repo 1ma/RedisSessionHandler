@@ -49,6 +49,15 @@ class SavePathParser
      */
     public static function parse($path)
     {
+        // parse_url() is intended to parse URLs (but not URIs) so it cannot parse Unix
+        // socket paths. However for backwards compatibility reasons it can still parse
+        // URIs that start with 'file://'
+        //
+        // @see https://www.php.net/manual/en/function.parse-url.php
+        if (0 === strpos($path, 'unix://')) {
+            $path = str_replace('unix://', 'file://', $path);
+        }
+
         $parsed_path = parse_url($path);
 
         $host = isset($parsed_path['host']) ?
