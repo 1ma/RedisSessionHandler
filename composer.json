@@ -20,11 +20,12 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3",
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^9.0"
     },
     "scripts": {
         "env-up": [
             "@composer install --ignore-platform-reqs",
+            "@composer install --ignore-platform-reqs --working-dir tests",
             "docker-compose -f tests/docker-compose.yml up -d"
         ],
         "env-rm": "docker-compose -f tests/docker-compose.yml down -v",

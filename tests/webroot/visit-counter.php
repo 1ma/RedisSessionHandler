@@ -4,7 +4,7 @@
 // of requests already made by a given authenticated client.
 // This is the main test script that exercises the RedisSessionHandler.
 
-require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 if (isset($_GET['with_no_time_limit'])) {
     set_time_limit(0);

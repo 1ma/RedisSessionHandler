@@ -28,7 +28,7 @@ abstract class EndToEndTestCase extends TestCase
      * e2e test cases start creating an HTTP client pointing
      * to the testing web server and flushing the Redis database.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $target = isset($_SERVER['TARGET']) ?
             $_SERVER['TARGET'] : self::DEFAULT_TARGET;

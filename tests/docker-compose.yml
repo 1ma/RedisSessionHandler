@@ -1,20 +1,25 @@
-version: "2"
+version: "3.7"
+
 services:
   runner:
-    image: 1maa/php:7.2
+    image: 1maa/php:7.4
     depends_on:
       - redis
       - nginx
     volumes:
       - ..:/var/www/redis-sessions.test
     working_dir: /var/www/redis-sessions.test
+
   redis:
     image: redis:5.0-alpine
+
   redis_monitor:
     image: redis:5.0-alpine
+    init: true
     command: redis-cli -h redis MONITOR
     depends_on:
       - redis
+
   nginx:
     image: nginx:1.17-alpine
     depends_on:
@@ -34,6 +39,7 @@ services:
     volumes:
       - ..:/var/www/redis-sessions.test
       - ./vhost.conf:/etc/nginx/conf.d/default.conf
+
   fpm56:
     image: 1maa/php-dev:5.6
     depends_on:
@@ -42,6 +48,7 @@ services:
       - ..:/var/www/redis-sessions.test
       - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
     working_dir: /var/www/redis-sessions.test
+
   fpm70:
     image: 1maa/php-dev:7.0
     depends_on:
@@ -50,6 +57,7 @@ services:
       - ..:/var/www/redis-sessions.test
       - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
     working_dir: /var/www/redis-sessions.test
+
   fpm71:
     image: 1maa/php-dev:7.1
     depends_on:
@@ -58,6 +66,7 @@ services:
       - ..:/var/www/redis-sessions.test
       - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
     working_dir: /var/www/redis-sessions.test
+
   fpm72:
     image: 1maa/php-dev:7.2
     depends_on:

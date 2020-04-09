@@ -1,0 +1,15 @@
+{
+    "name": "uma/redis-session-handler-testing",
+    "description": "composer setup for the webroot mock project",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.6",
+        "ext-redis": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "UMA\\": "../src/"
+        }
+    }
+}

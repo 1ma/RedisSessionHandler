@@ -107,7 +107,7 @@ class BasicTest extends EndToEndTestCase
         $this->assertSame('1', (string) $response->getBody());
 
         $this->assertCreatedNewSession($response);
-        $this->assertNotRegExp('/expires=/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertDoesNotMatchRegularExpression('/expires=/i', $response->getHeaderLine('Set-Cookie'));
 
         $this->assertSame(1, $this->redis->dbSize());
         $this->assertFalse($this->redis->get(SavePathParser::DEFAULT_PREFIX.'madeupkey'));
@@ -205,10 +205,10 @@ class BasicTest extends EndToEndTestCase
     {
         $this->assertTrue($response->hasHeader('Set-Cookie'));
         $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
-        $this->assertRegExp('/expires=/i', $response->getHeaderLine('Set-Cookie'));
-        $this->assertRegExp('/path=/i', $response->getHeaderLine('Set-Cookie'));
-        $this->assertRegExp('/secure/i', $response->getHeaderLine('Set-Cookie'));
-        $this->assertRegExp('/HttpOnly/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertMatchesRegularExpression('/expires=/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertMatchesRegularExpression('/path=/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertMatchesRegularExpression('/secure/i', $response->getHeaderLine('Set-Cookie'));
+        $this->assertMatchesRegularExpression('/HttpOnly/i', $response->getHeaderLine('Set-Cookie'));
     }
 }
 
