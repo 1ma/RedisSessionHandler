@@ -25,7 +25,7 @@ abstract class EndToEndTestCase extends TestCase
      */
     public function setUp()
     {
-        $this->http = new Client(['base_uri' => "http://testapp"]);
+        $this->http = new Client(['base_uri' => 'http://testapp']);
 
         $this->redis = new Redis();
         $this->redis->connect('redis');
@@ -46,7 +46,7 @@ abstract class EndToEndTestCase extends TestCase
     protected function prepareSessionHeader(ResponseInterface $response)
     {
         return [
-            'Cookie' => explode(' ', $response->getHeaderLine('Set-Cookie'))[0],
+            'Cookie' => explode(' ', $response->getHeaderLine('Set-Cookie'))[0]
         ];
     }
 }

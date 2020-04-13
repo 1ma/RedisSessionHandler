@@ -8,9 +8,10 @@ image:
   name: docker/compose:1.25.5
 
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
+  DOCKER_CERT_PATH: /certs/client
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: /certs
+  DOCKER_TLS_VERIFY: 1
 
 sanity-check:
   stage: .pre
