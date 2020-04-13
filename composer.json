@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=5.6",
+        "php": "^5.6.0",
         "ext-redis": "*"
     },
     "autoload": {
@@ -19,8 +19,8 @@
         }
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^6.3",
-        "phpunit/phpunit": "^7.0"
+        "guzzlehttp/guzzle": "^6.5",
+        "phpunit/phpunit": "^5.7"
     },
     "scripts": {
         "env-up": [
@@ -28,12 +28,6 @@
             "docker-compose -f tests/docker-compose.yml up -d"
         ],
         "env-rm": "docker-compose -f tests/docker-compose.yml down -v",
-        "test": [
-            "@env-up",
-            "docker exec tests_runner_1 sh -c \"TARGET=php56 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php70 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php71 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php72 vendor/bin/phpunit --testdox\""
-        ]
+        "test": "docker-compose -f tests/docker-compose.yml exec -T runner sh -c \"vendor/bin/phpunit --testdox\""
     }
 }

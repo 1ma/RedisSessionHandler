@@ -2,10 +2,14 @@
 
 namespace UMA;
 
+use Redis;
+use RuntimeException;
+use SessionHandler;
+
 /**
  * @author Marcel Hernandez
  */
-class RedisSessionHandler extends \SessionHandler
+class RedisSessionHandler extends SessionHandler
 {
     /**
      * Wait time (1ms) after first locking attempt. It doubles
@@ -22,7 +26,7 @@ class RedisSessionHandler extends \SessionHandler
     /**
      * The Redis client.
      *
-     * @var \Redis
+     * @var Redis
      */
     private $redis;
 
@@ -81,15 +85,15 @@ class RedisSessionHandler extends \SessionHandler
     private $cookieName;
 
     /**
-     * @throws \RuntimeException When the phpredis extension is not available.
+     * @throws RuntimeException When the phpredis extension is not available.
      */
     public function __construct()
     {
         if (false === extension_loaded('redis')) {
-            throw new \RuntimeException("the 'redis' extension is needed in order to use this session handler");
+            throw new RuntimeException("the 'redis' extension is needed in order to use this session handler");
         }
 
-        $this->redis = new \Redis();
+        $this->redis = new Redis();
         $this->lock_ttl = (int) ini_get('max_execution_time');
         $this->session_ttl = (int) ini_get('session.gc_maxlifetime');
     }
@@ -126,7 +130,7 @@ class RedisSessionHandler extends \SessionHandler
             $this->redis->select($database);
         }
 
-        $this->redis->setOption(\Redis::OPT_PREFIX, $prefix);
+        $this->redis->setOption(Redis::OPT_PREFIX, $prefix);
 
         return true;
     }

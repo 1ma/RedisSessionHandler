@@ -7,8 +7,12 @@ coding_style:
     php: {  }
 build:
     environment:
-        php: '7.2'
         docker: true
+        php:
+            version: '5.6'
+            pecl_extensions:
+                - redis-4.3.0
     tests:
         override:
+            - 'composer env-up'
             - 'composer test'

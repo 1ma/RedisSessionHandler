@@ -3,24 +3,19 @@
 namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Redis;
 
 abstract class EndToEndTestCase extends TestCase
 {
-    /**
-     * Hostname where to send the HTTP requests
-     * when $_SERVER['TARGET'] is not available.
-     */
-    const DEFAULT_TARGET = 'php56';
-
     /**
      * @var Client
      */
     protected $http;
 
     /**
-     * @var \Redis
+     * @var Redis
      */
     protected $redis;
 
@@ -30,12 +25,9 @@ abstract class EndToEndTestCase extends TestCase
      */
     public function setUp()
     {
-        $target = isset($_SERVER['TARGET']) ?
-            $_SERVER['TARGET'] : self::DEFAULT_TARGET;
+        $this->http = new Client(['base_uri' => "http://testapp"]);
 
-        $this->http = new Client(['base_uri' => "http://$target"]);
-
-        $this->redis = new \Redis();
+        $this->redis = new Redis();
         $this->redis->connect('redis');
         $this->redis->flushAll();
     }
@@ -45,13 +37,13 @@ abstract class EndToEndTestCase extends TestCase
      * header and prepares the headers array for a subsequent
      * authenticated request.
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      *
      * @return array
      *
      * @example ['Cookie' => 'PHPSESSID=urbigl47u82h0r9qke0q8jt23836j4gos5kebb0ed5ukiqepsau0;']
      */
-    protected function prepareSessionHeader(Response $response)
+    protected function prepareSessionHeader(ResponseInterface $response)
     {
         return [
             'Cookie' => explode(' ', $response->getHeaderLine('Set-Cookie'))[0],

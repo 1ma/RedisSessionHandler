@@ -3,7 +3,7 @@
 namespace UMA\RedisSessions\Tests\E2E;
 
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use UMA\SavePathParser;
 
 class BasicTest extends EndToEndTestCase
@@ -184,9 +184,9 @@ class BasicTest extends EndToEndTestCase
      * Asserts whether a received request triggered the creation of a new session.
      * It does so by searching for and inspecting the 'Set-Cookie' header.
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      */
-    protected function assertCreatedNewSession(Response $response)
+    protected function assertCreatedNewSession(ResponseInterface $response)
     {
         $this->assertTrue($response->hasHeader('Set-Cookie'));
         $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
@@ -199,9 +199,9 @@ class BasicTest extends EndToEndTestCase
      * Expected result:
      * set-cookie:PHPSESSID=0691f472784601a324eadf78c05cf4c1; expires=Tue, 11-Jul-2017 14:58:34 GMT; Max-Age=86400; path=/; secure; HttpOnly
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      */
-    protected function assertCustomCookieParams(Response $response)
+    protected function assertCustomCookieParams(ResponseInterface $response)
     {
         $this->assertTrue($response->hasHeader('Set-Cookie'));
         $this->assertStringStartsWith('PHPSESSID=', $response->getHeaderLine('Set-Cookie'));
