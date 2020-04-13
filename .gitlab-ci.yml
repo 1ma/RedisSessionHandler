@@ -1,0 +1,27 @@
+stages:
+  - tests
+
+services:
+  - docker:19.03.5-dind
+
+image:
+  name: docker/compose:1.25.5
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
+sanity-check:
+  stage: .pre
+  script:
+    - docker info
+    - docker version
+    - docker-compose version
+
+tests:
+  stage: tests
+  script:
+    - docker-compose -f tests/docker-compose.yml up -d
+    - docker-compose -f tests/docker-compose.yml exec -T runner sh -c "composer install"
+    - docker-compose -f tests/docker-compose.yml exec -T runner sh -c "vendor/bin/phpunit --testdox"
