@@ -53,6 +53,10 @@ class SavePathParserTest extends TestCase
                 'tcp://localhost:1234?prefix=APP_SESSIONS:&auth=secret&timeout=1.4&database=3',
                 ['localhost', 1234, 1.4, 'APP_SESSIONS:', 'secret', 3]
             ],
+            'issue #15' => [
+                'tcp://127.0.0.1:6379?database=2',
+                ['127.0.0.1', SavePathParser::DEFAULT_PORT, SavePathParser::DEFAULT_TIMEOUT, SavePathParser::DEFAULT_PREFIX, SavePathParser::DEFAULT_AUTH, 2]
+            ],
         ];
     }
 }
