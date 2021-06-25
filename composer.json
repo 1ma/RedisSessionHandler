@@ -19,8 +19,9 @@
         }
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^6.3",
-        "phpunit/phpunit": "^7.0"
+        "guzzlehttp/guzzle": "^6.5",
+        "phpunit/phpunit": "^7.0",
+        "symfony/polyfill-php72": "~1.22.0"
     },
     "scripts": {
         "env-up": [
