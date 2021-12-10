@@ -5,7 +5,7 @@ namespace UMA;
 /**
  * @author Marcel Hernandez
  */
-class RedisSessionHandler extends \SessionHandler
+class RedisSessionHandler extends \SessionHandler implements \SessionUpdateTimestampHandlerInterface
 {
     /**
      * Wait time (1ms) after first locking attempt. It doubles
@@ -89,6 +89,10 @@ class RedisSessionHandler extends \SessionHandler
             throw new \RuntimeException("the 'redis' extension is needed in order to use this session handler");
         }
 
+        if (PHP_VERSION_ID >= 70000 && !ini_get('session.use_strict_mode')) {
+            ini_set('session.use_strict_mode', true);
+        }
+
         $this->redis = new \Redis();
         $this->lock_ttl = (int) ini_get('max_execution_time');
         $this->session_ttl = (int) ini_get('session.gc_maxlifetime');
@@ -143,23 +147,39 @@ class RedisSessionHandler extends \SessionHandler
         return $id;
     }
 
+    private function regen()
+    {
+        session_id($session_id = $this->create_sid());
+        $params = session_get_cookie_params();
+        setcookie(
+            $this->cookieName,
+            $session_id,
+            $params['lifetime'] ? time() + $params['lifetime'] : 0,
+            $params['path'],
+            $params['domain'],
+            $params['secure'],
+            $params['httponly']
+        );
+        return $session_id;
+    }
+
+    public function validateId($sessionId)
+    {
+        return !$this->mustRegenerate($sessionId);
+    }
+
+    public function updateTimestamp($sessionId, $sessionData)
+    {
+        return parent::updateTimestamp($sessionId, $sessionData);
+    }
+
     /**
      * {@inheritdoc}
      */
     public function read($session_id)
     {
-        if ($this->mustRegenerate($session_id)) {
-            session_id($session_id = $this->create_sid());
-            $params = session_get_cookie_params();
-            setcookie(
-                $this->cookieName,
-                $session_id,
-                $params['lifetime'] ? time() + $params['lifetime'] : 0,
-                $params['path'],
-                $params['domain'],
-                $params['secure'],
-                $params['httponly']
-            );
+        if (PHP_VERSION_ID < 70000 && $this->mustRegenerate($session_id)) {
+            $session_id = $this->regen();
         }
 
         $this->acquireLockOn($session_id);
