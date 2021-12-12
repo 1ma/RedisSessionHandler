@@ -1,3 +1,7 @@
+### [0.9.8] - 2021-12-12
+
+* (Feature) Support all recent versions of PHP from 7.3 through 8.1 (contributed by @wgirhad)
+
 ### [0.9.7] - 2020-04-07
 
   * (Improvement) Implemented support for Unix paths as means to connect to a Redis server.
@@ -38,6 +42,7 @@
 
   * Initial pre-release
 
+[0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.4...v0.9.5
