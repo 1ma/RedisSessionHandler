@@ -22,6 +22,10 @@ services:
       - fpm70
       - fpm71
       - fpm72
+      - fpm73
+      - fpm74
+      - fpm80
+      - fpm81
     networks:
       default:
         aliases:
@@ -29,6 +33,10 @@ services:
           - php70
           - php71
           - php72
+          - php73
+          - php74
+          - php80
+          - php81
     ports:
       - 80
     volumes:
@@ -60,6 +68,38 @@ services:
     working_dir: /var/www/redis-sessions.test
   fpm72:
     image: 1maa/php-dev:7.2
+    depends_on:
+      - redis
+    volumes:
+      - ..:/var/www/redis-sessions.test
+      - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
+    working_dir: /var/www/redis-sessions.test
+  fpm73:
+    image: 1maa/php-dev:7.3
+    depends_on:
+      - redis
+    volumes:
+      - ..:/var/www/redis-sessions.test
+      - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
+    working_dir: /var/www/redis-sessions.test
+  fpm74:
+    image: 1maa/php-dev:7.4
+    depends_on:
+      - redis
+    volumes:
+      - ..:/var/www/redis-sessions.test
+      - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
+    working_dir: /var/www/redis-sessions.test
+  fpm80:
+    image: 1maa/php-dev:8.0
+    depends_on:
+      - redis
+    volumes:
+      - ..:/var/www/redis-sessions.test
+      - ./session_config.ini:/etc/php/fpm/conf.d/session_config.ini
+    working_dir: /var/www/redis-sessions.test
+  fpm81:
+    image: 1maa/php-dev:8.1
     depends_on:
       - redis
     volumes:

@@ -35,7 +35,11 @@
             "docker exec tests_runner_1 sh -c \"TARGET=php56 vendor/bin/phpunit --testdox\"",
             "docker exec tests_runner_1 sh -c \"TARGET=php70 vendor/bin/phpunit --testdox\"",
             "docker exec tests_runner_1 sh -c \"TARGET=php71 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php72 vendor/bin/phpunit --testdox\""
+            "docker exec tests_runner_1 sh -c \"TARGET=php72 vendor/bin/phpunit --testdox\"",
+            "docker exec tests_runner_1 sh -c \"TARGET=php73 vendor/bin/phpunit --testdox\"",
+            "docker exec tests_runner_1 sh -c \"TARGET=php74 vendor/bin/phpunit --testdox\"",
+            "docker exec tests_runner_1 sh -c \"TARGET=php80 vendor/bin/phpunit --testdox\"",
+            "docker exec tests_runner_1 sh -c \"TARGET=php81 vendor/bin/phpunit --testdox\""
         ]
     }
 }
