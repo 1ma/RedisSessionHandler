@@ -1,6 +1,10 @@
+### [0.9.9] - 2021-12-12
+
+  * (Hotfix) Unlock the required version of `symfony/polyfill-php70`
+
 ### [0.9.8] - 2021-12-12
 
-* (Feature) Support all recent versions of PHP from 7.3 through 8.1 (contributed by @wgirhad)
+  * (Feature) Support all recent versions of PHP from 7.3 through 8.1 (contributed by [@wgirhad](https://github.com/wgirhad))
 
 ### [0.9.7] - 2020-04-07
 
@@ -42,6 +46,7 @@
 
   * Initial pre-release
 
+[0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.8...v0.9.9
 [0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/1ma/RedisSessionHandler/compare/v0.9.5...v0.9.6
