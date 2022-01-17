@@ -1,0 +1,16 @@
+on: push
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Bring up stack
+        run: composer env-up
+      - name: Execute test suite
+        run: composer test
+      - name: Bring down stack
+        if: ${{ always() }}
+        run: composer env-down

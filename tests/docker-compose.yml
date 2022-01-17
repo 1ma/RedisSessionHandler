@@ -1,7 +1,8 @@
-version: "2"
+version: "3.8"
+
 services:
   runner:
-    image: 1maa/php:7.2
+    image: 1maa/php-dev:7.3
     depends_on:
       - redis
       - nginx
@@ -9,9 +10,9 @@ services:
       - ..:/var/www/redis-sessions.test
     working_dir: /var/www/redis-sessions.test
   redis:
-    image: redis:5.0-alpine
+    image: redis:6.0-alpine
   redis_monitor:
-    image: redis:5.0-alpine
+    image: redis:6.0-alpine
     command: redis-cli -h redis MONITOR
     depends_on:
       - redis
@@ -34,7 +35,7 @@ services:
           - php80
           - php81
     ports:
-      - 80
+      - "127.0.0.1:80:80"
     volumes:
       - ..:/var/www/redis-sessions.test
       - ./vhost.conf:/etc/nginx/conf.d/default.conf

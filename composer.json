@@ -27,17 +27,17 @@
     "scripts": {
         "env-up": [
             "@composer install --ignore-platform-reqs",
+            "docker-compose -f tests/docker-compose.yml pull",
             "docker-compose -f tests/docker-compose.yml up -d"
         ],
-        "env-rm": "docker-compose -f tests/docker-compose.yml down -v",
+        "env-down": "docker-compose -f tests/docker-compose.yml down -v",
         "test": [
-            "@env-up",
-            "docker exec tests_runner_1 sh -c \"TARGET=php71 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php72 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php73 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php74 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php80 vendor/bin/phpunit --testdox\"",
-            "docker exec tests_runner_1 sh -c \"TARGET=php81 vendor/bin/phpunit --testdox\""
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php71 php vendor/bin/phpunit --testdox\"",
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php72 php vendor/bin/phpunit --testdox\"",
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php73 php vendor/bin/phpunit --testdox\"",
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php74 php vendor/bin/phpunit --testdox\"",
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php80 php vendor/bin/phpunit --testdox\"",
+            "docker-compose -f tests/docker-compose.yml exec -T -u $(id -u):$(id -g) runner sh -c \"TARGET=php81 php vendor/bin/phpunit --testdox\""
         ]
     }
 }
